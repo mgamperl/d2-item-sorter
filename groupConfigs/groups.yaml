@@ -1,0 +1,362 @@
+- name: "# - Unique Armor"
+  indexType: MainIndex
+  sortMode: name
+  groupFilter:
+  - included:
+    - BodyArmor
+    uniqueItems: true  
+  - included:
+    - BodyArmor
+    minFilledSockets: 1
+    setItems: false
+- name: Set Armor
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - BodyArmor
+    setItems: true
+- name: Rare Armor
+  indexType: Normal
+  groupFilter:
+  - included:
+    - BodyArmor
+    rareItems: true
+- name: Misc Armor
+  indexType: Normal
+  groupFilter:
+  - included:
+    - BodyArmor
+- name: Unique Helmets
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Helmet
+    uniqueItems: true
+- name: Set Helmets
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Helmet
+    setItems: true
+- name: Rare Helmets
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Helmet
+    rareItems: true
+- name: Misc Helmets
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Helmet
+- name: Unique Gloves
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Gloves
+    uniqueItems: true
+- name: Set Gloves
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Gloves
+    setItems: true
+- name: Rare Gloves
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Gloves
+    rareItems: true
+- name: Misc Gloves
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Gloves
+- name: Unique Boots
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Boots
+    uniqueItems: true
+- name: Set Boots
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Boots
+    setItems: true
+- name: Rare Boots
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Boots
+    rareItems: true
+- name: Misc Boots
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Boots
+- name: Unique Belts
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Belt
+    uniqueItems: true
+- name: Set Belts
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Belt
+    setItems: true
+- name: Other Belts
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Belt
+    rareItems: true
+  - included:
+    - Belt
+- name: Unique Shields
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Shield
+    excluded:
+    - NecroHeads
+    uniqueItems: true
+- name: Set Shields
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Shield
+    excluded:
+    - NecroHeads
+    setItems: true
+- name: Other Shields
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Shield
+    excluded:
+    - NecroHeads
+    rareItems: true
+  - included:
+    - Shield
+    excluded:
+    - NecroHeads
+- name: Heads
+  indexType: Index
+  groupFilter:
+  - included:
+    - NecroHeads
+- name: Unique Bows
+  sortMode: name
+  indexType: MainIndex
+  groupFilter:
+  - included:
+    - BowAndCrossbow
+    uniqueItems: true
+- name: Set Bows
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - BowAndCrossbow
+    setItems: true
+- name: Other Bows
+  indexType: Normal
+  groupFilter:
+  - included:
+    - BowAndCrossbow
+- name: Javelins
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Javelins     
+- name: Staves and Wands
+  indexType: Index
+  groupFilter:
+  - included:
+    - StaffAndWands
+- name: Unique Swords
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Swords
+    uniqueItems: true
+- name: Set Swords
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Swords
+    setItems: true
+- name: Misc Swords
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Swords    
+- name: Unique Axes
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Axes
+    uniqueItems: true
+- name: Set Axes
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Axes
+    setItems: true
+- name: Misc Axes
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Axes        
+- name: Unique PolearmsAndSpears
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - PolearmsAndSpears
+    uniqueItems: true
+- name: Set PolearmsAndSpears
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - PolearmsAndSpears
+    setItems: true
+- name: Misc PolearmsAndSpears
+  indexType: Normal
+  groupFilter:
+  - included:
+    - PolearmsAndSpears     
+- name: Unique Weapons
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Weapons
+    uniqueItems: true
+- name: Set Weapons
+  sortMode: name
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Weapons
+    setItems: true
+- name: Other Weapons
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Weapons
+- name: Uniq Rings & Amus
+  indexType: MainIndex
+  sortMode: name  
+  groupFilter:
+  - included:
+    - RingsAndAmulets
+    uniqueItems: true
+- name: Misc Rings & Amus
+  indexType: Normal
+  sortMode: name  
+  groupFilter:
+  - included:
+    - RingsAndAmulets
+- name: Grand Charms
+  indexType: MainIndex
+  groupFilter:
+  - included:
+    - GrandCharms
+- name: Large Charms
+  indexType: Normal
+  groupFilter:
+  - included:
+    - LargeCharms
+- name: Small Charms
+  indexType: Normal
+  groupFilter:
+  - included:
+    - SmallCharms
+- name: Jewels
+  indexType: Index
+  groupFilter:
+  - included:
+    - Jewels
+- name: High Runes
+  sortMode: runeNumber
+  indexType: Index
+  groupFilter:
+  - included:
+    - Runes20to30
+  - included:
+    - Runes31to33
+- name: Medium Runes
+  sortMode: runeNumber
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Runes11to20
+- name: Low Runes
+  sortMode: runeNumber
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Runes1to10
+- name: Gems - Skull
+  indexType: Index
+  groupFilter:
+  - included:
+    - Skulls
+  sortMode: gemQuality
+- name: Gems - Diamond
+  indexType: Index
+  groupFilter:
+  - included:
+    - Diamond
+  sortMode: gemQuality
+- name: Gems - Topaz
+  indexType: Index
+  groupFilter:
+  - included:
+    - Topaz
+  sortMode: gemQuality
+- name: Gems - Amethyst
+  indexType: Index
+  groupFilter:
+  - included:
+    - Amethyst
+  sortMode: gemQuality
+- name: Gems - Ruby
+  indexType: Index
+  groupFilter:
+  - included:
+    - Ruby
+  sortMode: gemQuality
+- name: Gems - Sapphire
+  indexType: Index
+  groupFilter:
+  - included:
+    - Sapphire
+  sortMode: gemQuality
+- name: Gems - Emerald
+  indexType: Index
+  groupFilter:
+  - included:
+    - Emerald
+  sortMode: gemQuality

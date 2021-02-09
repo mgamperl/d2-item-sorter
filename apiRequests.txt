@@ -1,0 +1,21 @@
+ä### this is only for testing and subject to change
+
+POST http://localhost:3000/shared/transfer/Umbria
+
+###
+
+POST http://localhost:3000/characters/Sara/transferToShared
+
+###
+
+POST http://localhost:3000/characters/Umbria/transfer/Sara
+
+###
+
+# Start Run Recorder
+
+POST http://localhost:3000/startRunRecorder
+
+###
+
+POST http://localhost:3000/stopRunRecorder

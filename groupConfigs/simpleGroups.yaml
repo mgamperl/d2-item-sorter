@@ -1,0 +1,95 @@
+- name: Armor
+  indexType: MainIndex
+  groupFilter:
+  - included:
+    - Armor
+- name: Shields
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Shield
+- name: Weapons
+  sortMode: name
+  indexType: Index
+  groupFilter:
+  - included:
+    - Weapons
+- name: Rings & Amus
+  indexType: MainIndex
+  sortMode: name  
+  groupFilter:
+  - included:
+    - RingsAndAmulets
+- name: Charms
+  indexType: MainIndex
+  groupFilter:
+  - included:
+    - Charms
+- name: Jewels
+  indexType: Index
+  groupFilter:
+  - included:
+    - Jewels
+- name: High Runes
+  sortMode: runeNumber
+  indexType: Index
+  groupFilter:
+  - included:
+    - Runes20to30
+  - included:
+    - Runes31to33
+- name: Medium Runes
+  sortMode: runeNumber
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Runes11to20
+- name: Low Runes
+  sortMode: runeNumber
+  indexType: Normal
+  groupFilter:
+  - included:
+    - Runes1to10
+- name: Gems - Skull
+  indexType: Index
+  groupFilter:
+  - included:
+    - Skulls
+  sortMode: gemQuality
+- name: Gems - Diamond
+  indexType: Index
+  groupFilter:
+  - included:
+    - Diamond
+  sortMode: gemQuality
+- name: Gems - Topaz
+  indexType: Index
+  groupFilter:
+  - included:
+    - Topaz
+  sortMode: gemQuality
+- name: Gems - Amethyst
+  indexType: Index
+  groupFilter:
+  - included:
+    - Amethyst
+  sortMode: gemQuality
+- name: Gems - Ruby
+  indexType: Index
+  groupFilter:
+  - included:
+    - Ruby
+  sortMode: gemQuality
+- name: Gems - Sapphire
+  indexType: Index
+  groupFilter:
+  - included:
+    - Sapphire
+  sortMode: gemQuality
+- name: Gems - Emerald
+  indexType: Index
+  groupFilter:
+  - included:
+    - Emerald
+  sortMode: gemQuality
