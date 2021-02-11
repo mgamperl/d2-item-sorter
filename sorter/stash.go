@@ -429,7 +429,7 @@ func readPage(bfr *bufio.Reader, stashType StashType) (*StashPage, error) {
 	}
 
 	for _, item := range char.Items {
-		if additionalProperties, ok := itemPropertyMap[item.Type]; ok == true {
+		if additionalProperties, ok := itemPropertyMap[d2s.ItemType(item.Type)]; ok == true {
 			sortableItem := SortableItem{AdditionalProps: *additionalProperties}
 			sortableItem.SetItem(item, stashType, false)
 
