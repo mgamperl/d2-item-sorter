@@ -33,7 +33,7 @@ Commands:
 
 ### Sorting
 
-The commands (transfer, sort) will automatically sort your items based on the configuration found in `./groupConfigs/groups.yaml` and create pages based on this configuration. This means that all items will be ordered based on the configuration. 
+The commands (transfer, sort) will automatically sort your items based on the configuration found in `./config/groups.yaml` and create pages based on this configuration. This means that all items will be ordered based on the configuration. 
 
 _Please be aware that in the current version the transfer command does not work in every scenario and duplicated stash pages might be the result - this is a known issue at the moment._
 
@@ -71,9 +71,9 @@ Please report any issues you have in github I will take a look at it whenever ti
 
 ## Compile and Start
 
-Make sure that the folder groupConfigs is in the same folder as your .exe file
+Make sure that the folder config is in the same folder as your .exe file
 ```
-go build -o ./dist/d2-item-sorter.exe . && .\dist\d2-item-sorter.exe
+go build -o ./dist/d2-item-sorter.exe ./cmd && .\dist\d2-item-sorter.exe --port 4000
 ```
 
 # Credits
