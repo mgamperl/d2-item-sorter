@@ -1,11 +1,12 @@
 package data
 
-type ItemQuality string
+type ItemTypeQuality string
 
 const (
-	ItemQualityNormal      ItemQuality = "Normal"
-	ItemQualityExceptional ItemQuality = "Exceptional"
-	ItemQualityElite       ItemQuality = "Elite"
+	ItemQualityUnknown     ItemTypeQuality = "Unknown"
+	ItemQualityNormal      ItemTypeQuality = "Normal"
+	ItemQualityExceptional ItemTypeQuality = "Exceptional"
+	ItemQualityElite       ItemTypeQuality = "Elite"
 )
 
 type SortMode string

@@ -1,6 +1,10 @@
 package domain
 
-import "github.com/nokka/d2s"
+import (
+	"d2-item-sorter/pkg/data"
+
+	"github.com/nokka/d2s"
+)
 
 type Character struct {
 	Name                  string `json:"name"`
@@ -9,5 +13,30 @@ type Character struct {
 	Items                 []Item `json:"items"`
 	SaveFilename          string
 	PersonalStashFilename string
-	d2Char                d2s.Character
+	D2Char                d2s.Character
+	PersonalStash         *Stash
+}
+
+func (c *Character) GetInventoryItems() []Item {
+	return ItemFilterFunc(c.Items, func(i Item) bool {
+		return i.StoredAt.Name == data.LocationInventory
+	})
+}
+
+func (c *Character) GetMercItems() []Item {
+	return ItemFilterFunc(c.Items, func(i Item) bool {
+		return i.StoredAt.Name == data.LocationMercenary
+	})
+}
+
+func (c *Character) GetEquippedItems() []Item {
+	return ItemFilterFunc(c.Items, func(i Item) bool {
+		return i.StoredAt.Name == data.LocationEquipped
+	})
+}
+
+func (c *Character) GetBeltItems() []Item {
+	return ItemFilterFunc(c.Items, func(i Item) bool {
+		return i.StoredAt.Name == data.LocationBelt
+	})
 }

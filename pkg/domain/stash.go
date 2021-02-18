@@ -2,6 +2,7 @@ package domain
 
 import (
 	"bufio"
+	"d2-item-sorter/pkg/data"
 )
 
 type SharedGold struct {
@@ -9,22 +10,21 @@ type SharedGold struct {
 	Bytes  []byte `json:"-"`
 }
 
-type StashType string
-
-const (
-	StashTypeShared    StashType = "SSS"
-	StashTypeCharacter StashType = "CST"
-	StashTypeUnknown   StashType = ""
-)
-
 type Stash struct {
-	StashType  StashType     `json:"stashType"`
-	SharedGold SharedGold    `json:"sharedGold"`
-	StashPages []StashPage   `json:"stashPages"`
-	ItemCount  int           `json:"itemCount"`
-	Filepath   string        `json:"filePath"`
-	extraByte  byte          `json:"-"`
-	version    string        `json:"-"`
-	pageCount  int           `json:"-"`
-	bfr        *bufio.Reader `json:"-"`
+	StashType  data.StashType `json:"stashType"`
+	SharedGold SharedGold     `json:"sharedGold"`
+	StashPages []StashPage    `json:"stashPages"`
+	ItemCount  int            `json:"itemCount"`
+	Filepath   string         `json:"filePath"`
+	ExtraByte  byte           `json:"-"`
+	Bfr        *bufio.Reader  `json:"-"`
+	Version    string         `json:"-"`
+}
+
+func (s *Stash) GetAllItems() []Item {
+	allItems := []Item{}
+	for _, stashPage := range s.StashPages {
+		allItems = append(allItems, stashPage.Items...)
+	}
+	return allItems
 }

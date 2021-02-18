@@ -11,6 +11,10 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
+func Uint64ToBool(i uint64) bool {
+	return i == 1
+}
+
 func GetD2InstallPath() string {
 	k, err := registry.OpenKey(registry.CURRENT_USER, `SOFTWARE\Blizzard Entertainment\Diablo II`, registry.QUERY_VALUE)
 	if err != nil {

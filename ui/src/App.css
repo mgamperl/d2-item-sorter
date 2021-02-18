@@ -7,11 +7,11 @@
 }
 
 .ItemFound {
-  border: 2px solid #2F3C2A
+  border: 2px solid #A3BE8C
 }
 
 .ItemNotFound {
-  border: 2px solid #3D0000
+  border: 2px solid #BF616A
   
 }
 
@@ -27,7 +27,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #27303F;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

@@ -132,7 +132,7 @@ function App() {
           }}
         >
           {items.map((item) => {
-            if (item.isUnique && item.quality === "Normal") {
+            if (item.isRune) {
               return <ItemGridEntry key={item.id} item={item} />;
             } else {
               return null;
@@ -148,7 +148,7 @@ function App() {
           }}
         >
           {items.map((item) => {
-            if (item.isUnique && item.quality === "Exceptional") {
+            if (item.isUnique) {
               return <ItemGridEntry key={item.id} item={item} />;
             } else {
               return null;
@@ -164,7 +164,7 @@ function App() {
           }}
         >
           {items.map((item) => {
-            if (item.isUnique && item.quality === "Elite") {
+            if (item.isSet) {
               return <ItemGridEntry key={item.id} item={item} />;
             } else {
               return null;
@@ -187,6 +187,8 @@ const ItemGridEntry = ({ item }) => {
     <div
       key={item.imageId}
       style={{
+        backgroundColor: "#2E3440",
+        margin: "5px",
         display: "flex",
         flexDirection: "column",
         fontSize: 12,
@@ -198,6 +200,13 @@ const ItemGridEntry = ({ item }) => {
       <div>
         {item.typeName} ({item.quality})
       </div>
+      <ul style={{listStyle: "none"}}>
+        {
+          item.storedAt.map((location) => {
+            return <li>{location}</li>
+          })
+        }
+      </ul>
       <div
         style={{
           width: "100%",

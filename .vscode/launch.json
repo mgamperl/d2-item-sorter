@@ -9,8 +9,8 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}",
-            "args": [""]
+            "program": "${workspaceFolder}/cmd",
+            "args": ["sort","--name","_shared","--groups","../config/groups.yaml"]
         }
     ]
 }

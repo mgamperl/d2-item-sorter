@@ -1,10 +1,14 @@
 package api
 
 import (
+	"d2-item-sorter/pkg/config"
 	"d2-item-sorter/pkg/data"
 	"d2-item-sorter/pkg/domain"
-	"d2-item-sorter/pkg/internal"
+	"d2-item-sorter/pkg/internal/reader"
+	"d2-item-sorter/pkg/internal/runRecorder"
+	"d2-item-sorter/pkg/internal/sorter"
 	"d2-item-sorter/pkg/internal/utils"
+	"d2-item-sorter/pkg/internal/writer"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -16,10 +20,10 @@ import (
 var statistics = map[string]int{}
 
 // GetGroups returns the groups parsed from the porovided config file
-func GetGroups(groupConfigFile string) []internal.ItemGroup {
-	groups := []internal.ItemGroup{}
+func GetGroups(groupConfigFile string) []domain.ItemGroup {
+	groups := []domain.ItemGroup{}
 	if len(groups) <= 0 {
-		groups = internal.LoadGroupConfigFile(groupConfigFile)
+		groups = reader.LoadGroupConfigFile(groupConfigFile)
 	}
 	fmt.Printf("%d groups loaded\n", len(groups))
 	return groups
@@ -67,23 +71,24 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := internal.ParseSharedStash(saveDir)
-	characters, _ := internal.ParseCharacters(saveDir)
+	sharedStash := ReadSharedStash(saveDir)
+	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 
 	for idx, value := range data.UniqueItems {
 		if string(value.ItemType) != "" {
 			itemMap[fmt.Sprintf("u%d", idx)] = &domain.GrailStatusItem{
 				Name:           value.Name,
 				Order:          int(idx),
-				ItemQuality:    string(data.ItemPropertyMap[value.ItemType].ItemQuality),
-				Category:       string(data.ItemPropertyMap[value.ItemType].ItemCategory),
-				SubCategory:    string(data.ItemPropertyMap[value.ItemType].ItemSubSubCategory),
-				SubSubCategory: string(data.ItemPropertyMap[value.ItemType].ItemSubSubCategory),
+				ItemQuality:    string(data.ItemTypeMap[value.ItemType].ItemQuality),
+				Category:       string(data.ItemTypeMap[value.ItemType].ItemCategory),
+				SubCategory:    string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				SubSubCategory: string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
 				Type:           string(value.ItemType),
 				TypeName:       utils.GetTypeName(value.ItemType),
 				IsUnique:       true,
 				Count:          0,
-				ImageID:        fmt.Sprintf("u%d", idx)}
+				ImageID:        fmt.Sprintf("u%d", idx),
+				StoredAt:       []string{}}
 		}
 	}
 
@@ -92,16 +97,17 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 			itemMap[fmt.Sprintf("s%d", idx)] = &domain.GrailStatusItem{
 				Name:           value.Name,
 				Order:          int(idx),
-				ItemQuality:    string(data.ItemPropertyMap[value.ItemType].ItemQuality),
-				Category:       string(data.ItemPropertyMap[value.ItemType].ItemCategory),
-				SubCategory:    string(data.ItemPropertyMap[value.ItemType].ItemSubSubCategory),
-				SubSubCategory: string(data.ItemPropertyMap[value.ItemType].ItemSubSubCategory),
+				ItemQuality:    string(data.ItemTypeMap[value.ItemType].ItemQuality),
+				Category:       string(data.ItemTypeMap[value.ItemType].ItemCategory),
+				SubCategory:    string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				SubSubCategory: string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
 				Type:           string(value.ItemType),
 				TypeName:       utils.GetTypeName(value.ItemType),
 				IsSet:          true,
 				SetName:        value.SetName,
 				Count:          0,
-				ImageID:        fmt.Sprintf("s%d", idx)}
+				ImageID:        fmt.Sprintf("s%d", idx),
+				StoredAt:       []string{}}
 		}
 	}
 
@@ -111,14 +117,15 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 			Name:           d2s.MiscCodes[d2s.ItemType(runeCode)],
 			Order:          int(i),
 			Type:           runeCode,
-			ItemQuality:    string(data.ItemPropertyMap[d2s.ItemType(runeCode)].ItemQuality),
-			Category:       string(data.ItemPropertyMap[d2s.ItemType(runeCode)].ItemCategory),
-			SubCategory:    string(data.ItemPropertyMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
-			SubSubCategory: string(data.ItemPropertyMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
+			ItemQuality:    string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemQuality),
+			Category:       string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemCategory),
+			SubCategory:    string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
+			SubSubCategory: string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
 			TypeName:       utils.GetTypeName(d2s.ItemType(runeCode)),
 			IsRune:         true,
 			Count:          0,
-			ImageID:        runeCode}
+			ImageID:        runeCode,
+			StoredAt:       []string{}}
 	}
 
 	for _, char := range characters {
@@ -128,7 +135,8 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 		for _, item := range char.PersonalStash.GetAllItems() {
 			//fmt.Printf("\t\t %s\n", item.GetName())
 			if _, ok := itemMap[item.ID]; ok == true {
-				itemMap[item.ID].Count++
+				//itemMap[item.ID].Count++
+				addToGrailStatus(itemMap, item, fmt.Sprintf("%s: %s", char.Name, "Personal Stash"))
 			}
 		}
 
@@ -136,21 +144,24 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 		for _, item := range char.GetInventoryItems() {
 			//fmt.Printf("\t\t %s\n", item.GetName())
 			if _, ok := itemMap[item.ID]; ok == true {
-				itemMap[item.ID].Count++
+				//itemMap[item.ID].Count++
+				addToGrailStatus(itemMap, item, fmt.Sprintf("%s: %s", char.Name, "Inventory"))
 			}
 		}
 		fmt.Printf("\t%000d items equipped on character\n", len(char.GetEquippedItems()))
 		for _, item := range char.GetEquippedItems() {
 			//fmt.Printf("\t\t %s\n", item.GetName())
 			if _, ok := itemMap[item.ID]; ok == true {
-				itemMap[item.ID].Count++
+				//itemMap[item.ID].Count++
+				addToGrailStatus(itemMap, item, fmt.Sprintf("%s: %s", char.Name, "Equipped"))
 			}
 		}
 		fmt.Printf("\t%000d items equipped on merc\n", len(char.GetMercItems()))
 		for _, item := range char.GetMercItems() {
 			//fmt.Printf("\t\t %s\n", item.GetName())
 			if _, ok := itemMap[item.ID]; ok == true {
-				itemMap[item.ID].Count++
+				//itemMap[item.ID].Count++
+				addToGrailStatus(itemMap, item, fmt.Sprintf("%s: %s", char.Name, "Mercenary"))
 			}
 		}
 	}
@@ -160,7 +171,8 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 		//fmt.Printf("\t\t %s\n", item.GetName())
 
 		if _, ok := itemMap[item.ID]; ok == true {
-			itemMap[item.ID].Count++
+			//itemMap[item.ID].Count++
+			addToGrailStatus(itemMap, item, fmt.Sprintf("%s", "Shared Stash"))
 		}
 	}
 
@@ -175,7 +187,25 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 	return items
 }
 
-func SortItems(name string, groups []internal.ItemGroup) {
+func addToGrailStatus(m map[string]*domain.GrailStatusItem, item domain.Item, source string) {
+	if _, ok := m[item.ID]; ok == true {
+		m[item.ID].Count++
+		if !Contains(m[item.ID].StoredAt, source) {
+			m[item.ID].StoredAt = append(m[item.ID].StoredAt, source)
+		}
+	}
+}
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
+func SortItems(name string, groups []domain.ItemGroup) {
 	saveDir, err := GetSaveDir()
 
 	if err != nil {
@@ -185,17 +215,17 @@ func SortItems(name string, groups []internal.ItemGroup) {
 	if name == "_shared" {
 		fmt.Printf("sorting items for Shared Stash")
 
-		sharedStash := internal.ParseSharedStash(saveDir)
-		sharedStash.Reload()
-		sharedStash.SortItems(groups)
-		sharedStash.Save("")
+		sharedStash := ReadSharedStash(saveDir)
+		//sharedStash.Reload()
+		sharedStash.StashPages = sorter.SortItems(sharedStash, groups)
+		writer.WriteStashToFile(sharedStash, "")
 
 		//TOdO: Enable Loot Filter Again
 		//internal.WriteBHConfig(utils.GetD2InstallPath(), sharedStash.GetAllItems())
 
 	} else {
 
-		characters, _ := internal.ParseCharacters(saveDir)
+		characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 
 		if _, okFrom := characters[name]; okFrom == false && name != "_shared" {
 			fmt.Printf("%s is not a valid character name or does not exist\n", name)
@@ -204,23 +234,23 @@ func SortItems(name string, groups []internal.ItemGroup) {
 
 		fmt.Printf("sorting items for %s\n", name)
 
-		characters[name].Reload()
-		characters[name].SortPersonalStash(groups)
-		characters[name].Save("")
+		characters[name] = reader.ReloadAndReturnCharacter(characters[name])
+		characters[name].PersonalStash.StashPages = sorter.SortItems(*characters[name].PersonalStash, groups)
+		writer.WriteCharacterToFile(characters[name], "")
 	}
 
 	return
 }
 
-func TransferItems(nameFrom string, nameTo string, groups []internal.ItemGroup) {
+func TransferItems(nameFrom string, nameTo string, groups []domain.ItemGroup) {
 	saveDir, err := GetSaveDir()
 
 	if err != nil {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := internal.ParseSharedStash(saveDir)
-	characters, _ := internal.ParseCharacters(saveDir)
+	sharedStash := ReadSharedStash(saveDir)
+	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 
 	if _, okFrom := characters[nameFrom]; okFrom == false && nameFrom != "_shared" {
 		fmt.Printf("%s is not a valid character name or does not exist\n", nameFrom)
@@ -234,50 +264,50 @@ func TransferItems(nameFrom string, nameTo string, groups []internal.ItemGroup) 
 
 	if nameFrom == "_shared" {
 		fmt.Printf("transfering items from Shared Stash to %s\n", nameTo)
-		sharedStash.Reload()
-		characters[nameTo].Reload()
+		sharedStash = reader.ReloadAndReturnStash(sharedStash)
+		characters[nameTo] = reader.ReloadAndReturnCharacter(characters[nameTo])
 
-		sharedStash.TransferPagesTo(&characters[nameTo].PersonalStash)
+		sorter.TransferPagesTo(&sharedStash, characters[nameTo].PersonalStash)
 
-		sharedStash.SortItems(groups)
-		characters[nameTo].SortPersonalStash(groups)
+		sharedStash.StashPages = sorter.SortItems(sharedStash, groups)
+		characters[nameTo].PersonalStash.StashPages = sorter.SortItems(*characters[nameTo].PersonalStash, groups)
 
-		sharedStash.Save("")
-		characters[nameTo].Save("")
+		writer.WriteStashToFile(sharedStash, "")
+		writer.WriteCharacterToFile(characters[nameTo], "")
 
 	} else if nameTo == "_shared" {
 		fmt.Printf("transfering items from %s to Shared Stash\n", nameFrom)
-		sharedStash.Reload()
-		characters[nameFrom].Reload()
+		sharedStash = reader.ReloadAndReturnStash(sharedStash)
+		characters[nameFrom] = reader.ReloadAndReturnCharacter(characters[nameFrom])
 
-		characters[nameFrom].PersonalStash.TransferPagesTo(&sharedStash)
+		sorter.TransferPagesTo(characters[nameFrom].PersonalStash, &sharedStash)
 
-		sharedStash.SortItems(groups)
-		characters[nameFrom].SortPersonalStash(groups)
+		sharedStash.StashPages = sorter.SortItems(sharedStash, groups)
+		characters[nameFrom].PersonalStash.StashPages = sorter.SortItems(*characters[nameFrom].PersonalStash, groups)
 
-		sharedStash.Save("")
-		characters[nameFrom].Save("")
+		writer.WriteStashToFile(sharedStash, "")
+		writer.WriteCharacterToFile(characters[nameFrom], "")
 
 	} else {
 		fmt.Printf("transfering items from %s to %s\n", nameFrom, nameTo)
-		characters[nameFrom].Reload()
-		characters[nameTo].Reload()
+		characters[nameFrom] = reader.ReloadAndReturnCharacter(characters[nameFrom])
+		characters[nameTo] = reader.ReloadAndReturnCharacter(characters[nameTo])
 
-		characters[nameFrom].PersonalStash.TransferPagesTo(&characters[nameTo].PersonalStash)
+		sorter.TransferPagesTo(characters[nameFrom].PersonalStash, characters[nameTo].PersonalStash)
 
-		characters[nameTo].SortPersonalStash(groups)
-		characters[nameFrom].SortPersonalStash(groups)
+		characters[nameTo].PersonalStash.StashPages = sorter.SortItems(*characters[nameTo].PersonalStash, groups)
+		characters[nameFrom].PersonalStash.StashPages = sorter.SortItems(*characters[nameFrom].PersonalStash, groups)
 
-		characters[nameTo].Save("")
-		characters[nameFrom].Save("")
+		writer.WriteCharacterToFile(characters[nameTo], "")
+		writer.WriteCharacterToFile(characters[nameFrom], "")
 	}
 
 	return
 }
 
-func addStatistic(item internal.SortableItem) {
-	if item.IsUnique || item.IsSetItem {
-		statistics[item.GetName()]++
+func addStatistic(item domain.Item) {
+	if item.Quality == domain.ItemQualityUnique || item.Quality == domain.ItemQualitySet {
+		statistics[item.ID]++
 	}
 }
 
@@ -290,8 +320,8 @@ func PrintItemInfo() {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := internal.ParseSharedStash(saveDir)
-	characters, _ := internal.ParseCharacters(saveDir)
+	sharedStash := ReadSharedStash(saveDir)
+	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 	fmt.Printf("%d characters found\n", len(characters))
 
 	for _, name := range d2s.UniqueNames {
@@ -334,7 +364,7 @@ func PrintItemInfo() {
 	}
 }
 
-func StartWatcher(groups []internal.ItemGroup) {
+func StartWatcher(groups []domain.ItemGroup) {
 	saveDir, err := GetSaveDir()
 
 	if err != nil {
@@ -342,7 +372,13 @@ func StartWatcher(groups []internal.ItemGroup) {
 	}
 
 	fmt.Printf("Starting Run Recorder\n")
-	sharedStash := internal.ParseSharedStash(saveDir)
-	internal.StartRunRecorder(&sharedStash, groups)
+	sharedStash := ReadSharedStash(saveDir)
+	runRecorder.StartRunRecorder(&sharedStash, groups)
 
+}
+
+func ReadSharedStash(saveDir string) domain.Stash {
+	stashFilename := filepath.Join(saveDir, config.GetConfig().SharedStash.Filename)
+	stash, _ := reader.ReadStashFromFile(stashFilename)
+	return *stash
 }

@@ -2,7 +2,8 @@ package api
 
 import (
 	"d2-item-sorter/pkg/hotkeys"
-	"d2-item-sorter/pkg/internal"
+	"d2-item-sorter/pkg/internal/reader"
+	"d2-item-sorter/pkg/internal/runRecorder"
 	"d2-item-sorter/pkg/internal/utils"
 	"fmt"
 	"log"
@@ -33,8 +34,8 @@ func StartServer(port int) {
 	saveDir, _ = filepath.Abs(saveDir)
 	hotkeys.Init(keys)
 
-	sharedStash := internal.ParseSharedStash(saveDir)
-	characters, _ := internal.ParseCharacters(saveDir)
+	sharedStash := ReadSharedStash(saveDir)
+	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 	fmt.Printf("%d characters found\n", len(characters))
 
 	app := fiber.New()
@@ -129,7 +130,7 @@ func StartServer(port int) {
 		name := c.Params("name")
 
 		if char, ok := characters[name]; ok == true {
-			return c.JSON(char.GetAllItems())
+			return c.JSON(char.Items)
 		}
 
 		return c.SendStatus(404)
@@ -161,7 +162,7 @@ func StartServer(port int) {
 
 	app.Post("/startRunRecorder", func(c *fiber.Ctx) error {
 
-		internal.StartRunRecorder(&sharedStash, GetGroups("./config/groups.yaml"))
+		runRecorder.StartRunRecorder(&sharedStash, GetGroups("./config/groups.yaml"))
 		return c.JSON(&fiber.Map{
 			"success": true,
 		})
@@ -169,7 +170,7 @@ func StartServer(port int) {
 
 	app.Post("/stopRunRecorder", func(c *fiber.Ctx) error {
 
-		internal.StopRunRecorder()
+		runRecorder.StopRunRecorder()
 		return c.JSON(&fiber.Map{
 			"success": true,
 		})

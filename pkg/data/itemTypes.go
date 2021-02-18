@@ -1,6 +1,10 @@
 package data
 
-import "github.com/nokka/d2s"
+import (
+	"strconv"
+
+	"github.com/nokka/d2s"
+)
 
 var GemSortMap = map[ItemSubCategoryName]int{
 	Perfect:  1,
@@ -11,7 +15,7 @@ var GemSortMap = map[ItemSubCategoryName]int{
 }
 
 type ItemPropertyData struct {
-	ItemQuality        ItemQuality
+	ItemQuality        ItemTypeQuality
 	ItemCategory       ItemCategoryName
 	ItemSubCategory    ItemSubCategoryName
 	ItemSubSubCategory ItemSubSubCategoryName
@@ -19,7 +23,7 @@ type ItemPropertyData struct {
 	SizeY              int
 }
 
-var ItemPropertyMap = map[d2s.ItemType]*ItemPropertyData{
+var ItemTypeMap = map[d2s.ItemType]*ItemPropertyData{
 	d2s.Cap:                           {ItemQuality: ItemQualityNormal, SizeX: 2, SizeY: 2, ItemCategory: Armor, ItemSubCategory: Helmet, ItemSubSubCategory: NormalHelmet},                    // Cap
 	d2s.SkullCap:                      {ItemQuality: ItemQualityNormal, SizeX: 2, SizeY: 2, ItemCategory: Armor, ItemSubCategory: Helmet, ItemSubSubCategory: NormalHelmet},                    // Skull Cap
 	d2s.Helm:                          {ItemQuality: ItemQualityNormal, SizeX: 2, SizeY: 2, ItemCategory: Armor, ItemSubCategory: Helmet, ItemSubSubCategory: NormalHelmet},                    // Helm
@@ -653,4 +657,110 @@ var ItemPropertyMap = map[d2s.ItemType]*ItemPropertyData{
 	d2s.FesteringEssenceofDestruction: {ItemQuality: ItemQualityNormal, SizeX: 1, SizeY: 1, ItemCategory: Misc, ItemSubSubCategory: Essences},                                                  // Festering Essence of Destruction
 	d2s.TwistedEssenceofSuffering:     {ItemQuality: ItemQualityNormal, SizeX: 1, SizeY: 1, ItemCategory: Misc, ItemSubSubCategory: Essences},                                                  // Twisted Essence of Suffering
 	d2s.TokenofAbsolution:             {ItemQuality: ItemQualityNormal, SizeX: 1, SizeY: 1, ItemCategory: Misc, ItemSubSubCategory: Essences},                                                  // Token of Absolution
+}
+
+func GetItemPropertyData(item d2s.Item) (ItemPropertyData, bool) {
+	t, ok := ItemTypeMap[d2s.ItemType(item.Type)]
+	return *t, ok
+}
+
+//GetItemTypeQuality returns the ItemQuality of the given ItemType
+func GetItemTypeQuality(item d2s.Item) ItemTypeQuality {
+	if t, ok := GetItemPropertyData(item); ok {
+		return t.ItemQuality
+	}
+	return ItemQualityUnknown
+}
+
+func GetItemCategory(item d2s.Item) ItemCategoryName {
+	if t, ok := GetItemPropertyData(item); ok {
+		return t.ItemCategory
+	}
+	return ""
+}
+
+func GetItemProperties(item d2s.Item) *ItemPropertyData {
+	if t, ok := GetItemPropertyData(item); ok {
+		return &t
+	}
+	return nil
+}
+
+func IsRune(item d2s.Item) bool {
+	return GetItemCategory(item) == Runes
+}
+
+func IsUnique(item d2s.Item) bool {
+	return len(item.UniqueName) > 0 || item.UniqueID > 0
+}
+
+func IsRare(item d2s.Item) bool {
+	return len(item.RareName) > 0 || len(item.RareName2) > 0
+}
+
+func IsSet(item d2s.Item) bool {
+	return len(item.SetName) > 0
+}
+
+func IsMagic(item d2s.Item) bool {
+	return len(item.MagicPrefixName) > 0 || len(item.MagicSuffixName) > 0 || len(item.MagicAttributes) >= 1
+}
+
+func IsNormal(item d2s.Item) bool {
+	return !IsMagic(item) && !IsSet(item) && !IsRare(item) && !IsUnique(item) && !IsRune(item)
+}
+
+func IsRuneword(item d2s.Item) bool {
+	return len(item.RunewordName) > 0
+}
+
+func GetItemName(item d2s.Item) string {
+
+	eth := ""
+	sockets := ""
+	prefixes := ""
+	suffixes := ""
+
+	if len(item.MagicPrefixName) > 0 {
+		prefixes = item.MagicPrefixName + item.RareName + " "
+	}
+
+	if len(item.RareName2+item.MagicSuffixName) > 0 {
+		suffixes = " of " + item.RareName2 + item.MagicSuffixName
+	}
+
+	if len(item.RareName) > 0 {
+		prefixes = item.RareName
+	}
+
+	if len(item.RareName2) > 0 {
+		suffixes = " " + item.RareName2
+	}
+
+	if item.Ethereal == 1 {
+		eth = "[ETH] "
+	}
+
+	if item.TotalNrOfSockets > 0 {
+		sockets = " (" + strconv.Itoa(int(item.TotalNrOfSockets)) + ")"
+	}
+
+	if IsUnique(item) {
+		return eth + item.UniqueName + " / " + item.TypeName
+	}
+
+	if IsSet(item) {
+		return eth + item.SetName
+	}
+
+	if IsRare(item) || IsMagic(item) {
+		return eth + prefixes + suffixes + " / " + item.TypeName
+	}
+
+	if IsRuneword(item) {
+		return eth + item.RunewordName + " / " + item.TypeName
+	}
+
+	return eth + prefixes + item.TypeName + suffixes + sockets
+
 }
