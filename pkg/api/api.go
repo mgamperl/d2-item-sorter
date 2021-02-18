@@ -1,7 +1,6 @@
 package api
 
 import (
-	"d2-item-sorter/pkg/config"
 	"d2-item-sorter/pkg/data"
 	"d2-item-sorter/pkg/domain"
 	"d2-item-sorter/pkg/internal/reader"
@@ -71,7 +70,7 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := ReadSharedStash(saveDir)
+	sharedStash := reader.ReadSharedStash(saveDir)
 	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 
 	for idx, value := range data.UniqueItems {
@@ -215,7 +214,7 @@ func SortItems(name string, groups []domain.ItemGroup) {
 	if name == "_shared" {
 		fmt.Printf("sorting items for Shared Stash")
 
-		sharedStash := ReadSharedStash(saveDir)
+		sharedStash := reader.ReadSharedStash(saveDir)
 		//sharedStash.Reload()
 		sharedStash.StashPages = sorter.SortItems(sharedStash, groups)
 		writer.WriteStashToFile(sharedStash, "")
@@ -249,7 +248,7 @@ func TransferItems(nameFrom string, nameTo string, groups []domain.ItemGroup) {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := ReadSharedStash(saveDir)
+	sharedStash := reader.ReadSharedStash(saveDir)
 	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 
 	if _, okFrom := characters[nameFrom]; okFrom == false && nameFrom != "_shared" {
@@ -320,7 +319,7 @@ func PrintItemInfo() {
 		panic("can not find Diablo2 Directory")
 	}
 
-	sharedStash := ReadSharedStash(saveDir)
+	sharedStash := reader.ReadSharedStash(saveDir)
 	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 	fmt.Printf("%d characters found\n", len(characters))
 
@@ -372,13 +371,7 @@ func StartWatcher(groups []domain.ItemGroup) {
 	}
 
 	fmt.Printf("Starting Run Recorder\n")
-	sharedStash := ReadSharedStash(saveDir)
+	sharedStash := reader.ReadSharedStash(saveDir)
 	runRecorder.StartRunRecorder(&sharedStash, groups)
 
-}
-
-func ReadSharedStash(saveDir string) domain.Stash {
-	stashFilename := filepath.Join(saveDir, config.GetConfig().SharedStash.Filename)
-	stash, _ := reader.ReadStashFromFile(stashFilename)
-	return *stash
 }

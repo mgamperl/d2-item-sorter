@@ -34,6 +34,7 @@ const (
 
 //Item represents an ingame item, used for API output and also for internal calcuations
 type Item struct {
+	Hash           string                      `json:"hash"`     //unique hash for each item
 	ID             string                      `json:"id"`       //id to identify an item (ie. which kind of unique, which kind of rare)
 	Name           string                      `json:"name"`     //display name for the item
 	Quality        ItemQuality                 `json:"quality"`  //Normal, Magic, Rare, Unique, Set, ..

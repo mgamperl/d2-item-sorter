@@ -3,12 +3,14 @@ package reader
 import (
 	"bufio"
 	"bytes"
+	"d2-item-sorter/pkg/config"
 	"d2-item-sorter/pkg/data"
 	"d2-item-sorter/pkg/domain"
 	"encoding/binary"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/nokka/d2s"
@@ -16,6 +18,12 @@ import (
 
 type StashNum struct {
 	Count uint16
+}
+
+func ReadSharedStash(saveDir string) domain.Stash {
+	stashFilename := filepath.Join(saveDir, config.GetConfig().SharedStash.Filename)
+	stash, _ := ReadStashFromFile(stashFilename)
+	return *stash
 }
 
 func ReloadAndReturnStash(stash domain.Stash) domain.Stash {

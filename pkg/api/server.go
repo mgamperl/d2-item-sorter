@@ -34,7 +34,7 @@ func StartServer(port int) {
 	saveDir, _ = filepath.Abs(saveDir)
 	hotkeys.Init(keys)
 
-	sharedStash := ReadSharedStash(saveDir)
+	sharedStash := reader.ReadSharedStash(saveDir)
 	characters, _ := reader.ReadAllCharactersFromPath(saveDir)
 	fmt.Printf("%d characters found\n", len(characters))
 

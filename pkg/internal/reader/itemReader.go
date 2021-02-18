@@ -72,6 +72,8 @@ func NewItem(item d2s.Item, stashType data.StashType) *domain.Item {
 
 	i.Name = data.GetItemName(item)
 
+	i.Hash = fmt.Sprintf("%d", utils.Hash(fmt.Sprintf("%s", i.Name)))
+
 	return &i
 }
 

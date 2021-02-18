@@ -10,6 +10,14 @@ import (
 	"strings"
 )
 
+type itemMapEntry struct {
+	item  domain.Item
+	name  string
+	count int
+}
+
+type itemMap map[string]*itemMapEntry
+
 func Bool(v bool) *bool       { return &v }
 func Int(v int) *int          { return &v }
 func String(v string) *string { return &v }
@@ -284,6 +292,74 @@ func GroupItems(groups []domain.ItemGroup, items []domain.Item) []domain.StashPa
 	return allPages
 }
 
+func CompareItems(currentItems []domain.Item, previousItems []domain.Item) (added []domain.Item, removed []domain.Item) {
+
+	newItems := []domain.Item{}
+	deletedItems := []domain.Item{}
+
+	fmt.Printf("comparing %d items from previous run to %d items from current run\n", len(previousItems), len(currentItems))
+
+	//look if any item is missing which has been there before
+	itemMap := generateItemHashMap(currentItems)
+	itemMap = subtractItems(itemMap, previousItems)
+
+	for _, entry := range itemMap {
+		if entry.count > 0 {
+			newItems = append(newItems, entry.item)
+		} else if entry.count < 0 {
+			deletedItems = append(deletedItems, entry.item)
+		}
+	}
+
+	/*for _, oldItem := range previousItems {
+		if !ContainsItem(previousItems, oldItem, itemComparator) {
+			deletedItems = append(deletedItems, oldItem)
+		}
+	}
+
+	//look if any item is new which has not been in the previous run
+	for _, currentItem := range currentItems {
+		if !ContainsItem(previousItems, currentItem, itemComparator) {
+			newItems = append(newItems, currentItem)
+		}
+	}*/
+
+	return newItems, deletedItems
+}
+
+func subtractItems(itemMap itemMap, items []domain.Item) itemMap {
+	for _, item := range items {
+		if _, ok := itemMap[item.Hash]; !ok {
+			itemMap[item.Hash] = &itemMapEntry{name: item.Name, count: -1, item: item}
+		} else {
+			itemMap[item.Hash].count--
+		}
+	}
+	return itemMap
+}
+
+func generateItemHashMap(items []domain.Item) itemMap {
+	itemMap := itemMap{}
+	for _, item := range items {
+		if _, ok := itemMap[item.Hash]; !ok {
+			itemMap[item.Hash] = &itemMapEntry{name: item.Name, count: 1, item: item}
+		} else {
+			itemMap[item.Hash].count++
+		}
+	}
+	return itemMap
+}
+
+func ContainsItem(items []domain.Item, search domain.Item, comp func(a domain.Item, b domain.Item) bool) bool {
+	exists := false
+	for _, item := range items {
+		if comp(item, search) {
+			return true
+		}
+	}
+	return exists
+}
+
 func TransferPagesTo(source *domain.Stash, target *domain.Stash) {
 
 	ignoredItems := 0
@@ -316,4 +392,8 @@ func TransferPagesTo(source *domain.Stash, target *domain.Stash) {
 	target.StashPages = append(target.StashPages, targetStashPages...)
 
 	fmt.Printf("%d stash pages kept in source and %d pages for target\n", len(source.StashPages), len(targetStashPages))
+}
+
+func itemComparator(a domain.Item, b domain.Item) bool {
+	return a.Hash == b.Hash
 }
