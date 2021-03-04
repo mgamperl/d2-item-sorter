@@ -1,6 +1,6 @@
 ä### this is only for testing and subject to change
 
-POST http://localhost:3000/shared/transfer/Umbria
+GET http://localhost:4000/api/sharedStash
 
 ###
 

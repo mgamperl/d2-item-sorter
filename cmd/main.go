@@ -1,9 +1,14 @@
+//go:generate goversioninfo -icon=resource/icon.ico -manifest=resource/goversionfo.exe.manifest -64
 package main
 
 import (
 	"d2-item-sorter/pkg/api"
+	"d2-item-sorter/pkg/server"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
+	"runtime"
 
 	"github.com/mkideal/cli"
 )
@@ -61,7 +66,8 @@ type itemInfoT struct {
 
 type serveInfoT struct {
 	cli.Helper
-	Port int `cli:"port" usage:"specify port number for server to listen on" dft:"3000"`
+	Port int  `cli:"port" usage:"specify port number for server to listen on" dft:"3000"`
+	NoUI bool `cli:"noUI" usage:"do not open browser automatically when starting" dft:"false"`
 }
 
 type generateInfoT struct {
@@ -135,7 +141,30 @@ var cmdServe = &cli.Command{
 	Argv: func() interface{} { return new(serveInfoT) },
 	Fn: func(ctx *cli.Context) error {
 		argv := ctx.Argv().(*serveInfoT)
-		api.StartServer(argv.Port)
+		if !argv.NoUI {
+			openBrowser(fmt.Sprintf("http://localhost:%d", argv.Port))
+		}
+		fmt.Println(header)
+		server.StartServer(argv.Port)
+
 		return nil
 	},
+}
+
+func openBrowser(url string) {
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
 }

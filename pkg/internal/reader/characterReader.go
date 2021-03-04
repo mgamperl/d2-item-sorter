@@ -40,7 +40,7 @@ func ReadCharacterFromFile(path string) (*domain.Character, error) {
 		return nil, err
 	}
 
-	fmt.Printf("!found %c items in personal stash\n", characterStash.ItemCount)
+	//fmt.Printf("!found %c items in personal stash\n", characterStash.ItemCount)
 
 	allExceptPersonalStashItems := domain.ItemFilterFunc(NewItemsFromCharacter(char.Items), func(item domain.Item) bool {
 		//fmt.Printf("!found %s in character file: %s\n ", item.GetName(), item.Location)

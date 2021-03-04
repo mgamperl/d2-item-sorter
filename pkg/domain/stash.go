@@ -11,11 +11,11 @@ type SharedGold struct {
 }
 
 type Stash struct {
-	StashType  data.StashType `json:"stashType"`
+	StashType  data.StashType `json:"type"`
 	SharedGold SharedGold     `json:"sharedGold"`
-	StashPages []StashPage    `json:"stashPages"`
+	StashPages []StashPage    `json:"pages"`
 	ItemCount  int            `json:"itemCount"`
-	Filepath   string         `json:"filePath"`
+	Filepath   string         `json:"filename"`
 	ExtraByte  byte           `json:"-"`
 	Bfr        *bufio.Reader  `json:"-"`
 	Version    string         `json:"-"`

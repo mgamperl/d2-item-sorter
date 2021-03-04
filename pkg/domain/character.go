@@ -11,10 +11,10 @@ type Character struct {
 	Level                 int    `json:"level"`
 	Class                 string `json:"class"`
 	Items                 []Item `json:"items"`
-	SaveFilename          string
-	PersonalStashFilename string
+	SaveFilename          string `json:"filename"`
+	PersonalStashFilename string `json:"stashFilename"`
 	D2Char                d2s.Character
-	PersonalStash         *Stash
+	PersonalStash         *Stash `json:"personalStash"`
 }
 
 func (c *Character) GetInventoryItems() []Item {

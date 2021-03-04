@@ -76,55 +76,58 @@ func GetGrailStatusList() []domain.GrailStatusItem {
 	for idx, value := range data.UniqueItems {
 		if string(value.ItemType) != "" {
 			itemMap[fmt.Sprintf("u%d", idx)] = &domain.GrailStatusItem{
-				Name:           value.Name,
-				Order:          int(idx),
-				ItemQuality:    string(data.ItemTypeMap[value.ItemType].ItemQuality),
-				Category:       string(data.ItemTypeMap[value.ItemType].ItemCategory),
-				SubCategory:    string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
-				SubSubCategory: string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
-				Type:           string(value.ItemType),
-				TypeName:       utils.GetTypeName(value.ItemType),
-				IsUnique:       true,
-				Count:          0,
-				ImageID:        fmt.Sprintf("u%d", idx),
-				StoredAt:       []string{}}
+				Name:            value.Name,
+				Order:           int(idx),
+				ItemQuality:     string(domain.ItemQualityUnique),
+				ItemTypeQuality: string(data.ItemTypeMap[value.ItemType].ItemQuality),
+				Category:        string(data.ItemTypeMap[value.ItemType].ItemCategory),
+				SubCategory:     string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				SubSubCategory:  string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				Type:            string(value.ItemType),
+				TypeName:        utils.GetTypeName(value.ItemType),
+				IsUnique:        true,
+				Count:           0,
+				ImageID:         fmt.Sprintf("u%d", idx),
+				StoredAt:        []string{}}
 		}
 	}
 
 	for idx, value := range data.SetItems {
 		if string(value.ItemType) != "" {
 			itemMap[fmt.Sprintf("s%d", idx)] = &domain.GrailStatusItem{
-				Name:           value.Name,
-				Order:          int(idx),
-				ItemQuality:    string(data.ItemTypeMap[value.ItemType].ItemQuality),
-				Category:       string(data.ItemTypeMap[value.ItemType].ItemCategory),
-				SubCategory:    string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
-				SubSubCategory: string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
-				Type:           string(value.ItemType),
-				TypeName:       utils.GetTypeName(value.ItemType),
-				IsSet:          true,
-				SetName:        value.SetName,
-				Count:          0,
-				ImageID:        fmt.Sprintf("s%d", idx),
-				StoredAt:       []string{}}
+				Name:            value.Name,
+				Order:           int(idx),
+				ItemQuality:     string(domain.ItemQualitySet),
+				ItemTypeQuality: string(data.ItemTypeMap[value.ItemType].ItemQuality),
+				Category:        string(data.ItemTypeMap[value.ItemType].ItemCategory),
+				SubCategory:     string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				SubSubCategory:  string(data.ItemTypeMap[value.ItemType].ItemSubSubCategory),
+				Type:            string(value.ItemType),
+				TypeName:        utils.GetTypeName(value.ItemType),
+				IsSet:           true,
+				SetName:         value.SetName,
+				Count:           0,
+				ImageID:         fmt.Sprintf("s%d", idx),
+				StoredAt:        []string{}}
 		}
 	}
 
 	for i := 1; i <= 33; i++ {
 		runeCode := fmt.Sprintf("r%02d", i)
 		itemMap[runeCode] = &domain.GrailStatusItem{
-			Name:           d2s.MiscCodes[d2s.ItemType(runeCode)],
-			Order:          int(i),
-			Type:           runeCode,
-			ItemQuality:    string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemQuality),
-			Category:       string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemCategory),
-			SubCategory:    string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
-			SubSubCategory: string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
-			TypeName:       utils.GetTypeName(d2s.ItemType(runeCode)),
-			IsRune:         true,
-			Count:          0,
-			ImageID:        runeCode,
-			StoredAt:       []string{}}
+			Name:            d2s.MiscCodes[d2s.ItemType(runeCode)],
+			Order:           int(i),
+			Type:            runeCode,
+			ItemQuality:     string(domain.ItemQualityNormal),
+			ItemTypeQuality: string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemQuality),
+			Category:        string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemCategory),
+			SubCategory:     string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
+			SubSubCategory:  string(data.ItemTypeMap[d2s.ItemType(runeCode)].ItemSubSubCategory),
+			TypeName:        utils.GetTypeName(d2s.ItemType(runeCode)),
+			IsRune:          true,
+			Count:           0,
+			ImageID:         runeCode,
+			StoredAt:        []string{}}
 	}
 
 	for _, char := range characters {

@@ -41,6 +41,7 @@ var EquipmentPositionMap = map[byte]EquipmentLocation{
 
 var PanelPositionMap = map[byte]EquipmentLocation{
 	0x01: LocationInventory,
+	0x04: LocationCube,
 	0x05: LocationPersonalStash,
 }
 

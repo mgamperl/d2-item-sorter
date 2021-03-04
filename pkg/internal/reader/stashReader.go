@@ -82,7 +82,7 @@ func readStash(path string) (*domain.Stash, error) {
 		return nil, err
 	}
 
-	fmt.Printf("Stash (%s) with %d pages and %d gold\n", s.StashType, pageCount, s.SharedGold.Amount)
+	//fmt.Printf("Stash (%s) with %d pages and %d gold\n", s.StashType, pageCount, s.SharedGold.Amount)
 
 	var stashPages []domain.StashPage = []domain.StashPage{}
 
